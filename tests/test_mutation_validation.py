@@ -11,11 +11,10 @@ class ValidatingMutation(graphene.Mutation):
     Output = OutputForTests
 
     @classmethod
-    def mutate(cls, root, info, _input=None):
-        validate(cls, root, info, _input=_input)
+    def mutate(cls, root, info, **mutation_input):
+        validate(cls, root, info, **mutation_input)
 
-        if _input is None:
-            _input = {}
+        _input = mutation_input.get("_input", {})
 
         return OutputForTests(
             email=_input.get("email"),

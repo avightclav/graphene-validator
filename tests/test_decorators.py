@@ -11,9 +11,8 @@ class DecoratorMutation(graphene.Mutation):
 
     Output = OutputForTests
 
-    def mutate(self, _info, _inpt=None):
-        if _inpt is None:
-            _inpt = {}
+    def mutate(self, _info, **mutation_input):
+        _inpt = mutation_input.get("_inpt", {})
 
         return OutputForTests(
             email=_inpt.get("email"),
