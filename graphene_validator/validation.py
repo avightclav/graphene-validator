@@ -1,20 +1,28 @@
 import functools
+from collections.abc import Mapping
 
 from .errors import ValidationError, ValidationGraphQLError
 from .utils import _get_path, _unpack_input_tree, _unwrap_validator
 
 
-def _do_validation(info, input_tree, input_arg, **kwargs):
+def _do_validation(info, input_key, input_tree, input_arg, **kwargs):
     errors = []
 
     root_validator = _unwrap_validator(
         getattr(input_arg, "get_type", lambda: input_arg.type)()
     )
-    # Run a BFS on the input tree, flattening everything to a list of fields to validate
-    # and a list of subtrees to validate as a whole (for codependent fields)
-    fields_to_validate, subtrees_to_validate = _unpack_input_tree(
-        input_tree, root_validator
-    )
+
+    if isinstance(input_tree, Mapping):
+        # Run a BFS on the input tree, flattening everything to a list of fields to validate
+        # and a list of subtrees to validate as a whole (for codependent fields)
+        fields_to_validate, subtrees_to_validate = _unpack_input_tree(
+            input_tree, root_validator
+        )
+    else:
+        # The "input tree" is not a tree, so assume it's a scalar. No need to flatten anything.
+        # There's only this one value to validate.
+        fields_to_validate = [(input_key, input_tree, root_validator, None, None)]
+        subtrees_to_validate = []
 
     # Run field level validation logic
     for ftv in fields_to_validate:
@@ -64,7 +72,7 @@ def validate(cls, root, info, **mutation_input):
 
     for input_key, input_tree in mutation_input.items():
         input_arg = getattr(input_class, input_key)
-        errors += _do_validation(info, input_tree, input_arg, **mutation_input)
+        errors += _do_validation(info, input_key, input_tree, input_arg, **mutation_input)
 
     if errors:
         raise ValidationGraphQLError(

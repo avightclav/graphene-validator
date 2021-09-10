@@ -127,7 +127,8 @@ class ValidationTestSuite:
             "input": {
                 "email": "a0@b.c",
                 "people": [{"theName": "a", "theAge": "0"}],
-            }
+            },
+            "rootString": "Scalar at root level",
         })
         assert not result.errors
         assert result.data["testMutation"]["email"] == "a0@b.c"

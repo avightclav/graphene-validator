@@ -7,6 +7,7 @@ from .validation_test_suite import InputForTests, PersonalData, ValidationTestSu
 class ValidatingClientIdMutation(graphene.relay.ClientIDMutation):
     class Input:
         data = InputForTests()
+        root_string = graphene.String()
 
     email = graphene.String()
     the_person = graphene.Field(PersonalData)
@@ -29,11 +30,12 @@ class Mutations(graphene.ObjectType):
 
 class TestClientIdMutationValidation(ValidationTestSuite):
     def build_input(self, input):
+        new_input = input.copy()
+        new_input["data"] = new_input.pop("input")
+
         return {
             "clientMutationId": "test-id",
-            "input": {
-                "data": input["input"]
-            },
+            "input": new_input,
         }
 
     request = """

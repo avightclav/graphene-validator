@@ -8,6 +8,7 @@ from .validation_test_suite import InputForTests, OutputForTests, ValidationTest
 class DecoratorMutation(graphene.Mutation):
     class Arguments:
         _inpt = graphene.Argument(InputForTests, name="input")
+        root_string = graphene.String()
 
     Output = OutputForTests
 
@@ -26,8 +27,8 @@ class Mutations(graphene.ObjectType):
 
 class TestDecorators(ValidationTestSuite):
     request = """
-        mutation Test($input: InputForTests) {
-            testMutation(input: $input) {
+        mutation Test($input: InputForTests, $rootString: String) {
+            testMutation(input: $input, rootString: $rootString) {
                 email
                 thePerson {
                     theName
