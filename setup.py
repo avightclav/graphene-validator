@@ -7,5 +7,5 @@ setuptools.setup(
     author="Marco Chiappetta",
     description="An input validation library for Graphene",
     packages=setuptools.find_packages(),
-    install_requires=["graphene<3"],
+    install_requires=["graphene<4"],
 )
