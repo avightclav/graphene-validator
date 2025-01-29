@@ -79,15 +79,16 @@ def _unpack_input_tree(input_tree, validator_cls):
             # Unpack nested input fields
             add_fields_to_unpack(value, inner_validator, current)
         elif isinstance(field_type, graphene.List):
+            inner_validator = _unwrap_validator(field_type)
+
             # TODO(mc): better way to check if it's a scalar?
             if isinstance(
-                field_type.of_type._meta, graphene.types.scalars.ScalarOptions
+                inner_validator._meta, graphene.types.scalars.ScalarOptions
             ):
                 # List of scalar types, validate
                 fields_to_validate.append((name, value, validator, parent, None))
             else:
                 # List of complex types, unpack
-                inner_validator = _unwrap_validator(field_type)
                 for idx, item in enumerate(value):
                     add_subtree_to_validate(item, inner_validator)
                     add_fields_to_unpack(item, inner_validator, current, idx)
