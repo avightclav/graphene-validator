@@ -1,4 +1,5 @@
 import graphene
+from graphene import NonNull
 
 from graphene_validator.decorators import validated
 from graphene_validator.errors import (
@@ -57,7 +58,7 @@ class PersonalDataInput(graphene.InputObjectType):
 class TestInput(graphene.InputObjectType):
     email = graphene.String()
     people = graphene.List(PersonalDataInput)
-    numbers = graphene.List(graphene.Int)
+    numbers = graphene.List(NonNull(graphene.Int))
     # Check camelCasing too
     the_person = graphene.InputField(PersonalDataInput)
 
